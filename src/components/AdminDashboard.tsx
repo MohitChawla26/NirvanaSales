@@ -1,6 +1,19 @@
-import { ArrowLeft, DollarSign, TrendingUp, Clock, Lock } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { getTotalRevenue, getTopSeller, getRecentTransactions, SaleWithProduct } from '../services/api';
+import {
+  ArrowLeft,
+  DollarSign,
+  TrendingUp,
+  Clock,
+  Lock,
+  Trash2,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  getTotalRevenue,
+  getTopSeller,
+  getRecentTransactions,
+  SaleWithProduct,
+  deleteSale,
+} from "../services/api";
 
 interface AdminDashboardProps {
   onBack: () => void;
@@ -8,18 +21,23 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ onBack }: AdminDashboardProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [totalRevenue, setTotalRevenue] = useState<number>(0);
-  const [topSeller, setTopSeller] = useState<{ item_name: string; total_sales: number } | null>(null);
-  const [recentTransactions, setRecentTransactions] = useState<SaleWithProduct[]>([]);
+  const [topSeller, setTopSeller] = useState<{
+    item_name: string;
+    total_sales: number;
+  } | null>(null);
+  const [recentTransactions, setRecentTransactions] = useState<
+    SaleWithProduct[]
+  >([]);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = () => {
-    if (password === 'admin123') {
+    if (password === "admin123") {
       setIsAuthenticated(true);
       loadDashboardData();
     } else {
-      alert('Incorrect password');
+      alert("Incorrect password");
     }
   };
 
@@ -35,20 +53,33 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
       setTopSeller(seller);
       setRecentTransactions(Array.isArray(transactions) ? transactions : []);
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      console.error("Error loading dashboard data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteSale = async (saleId: number) => {
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
+      const success = await deleteSale(saleId);
+      if (success) {
+        // Refresh data after deletion
+        loadDashboardData();
+        alert("Transaction deleted successfully");
+      } else {
+        alert("Failed to delete transaction");
+      }
     }
   };
 
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+      return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch (e) {
       return dateString;
@@ -78,7 +109,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+              onKeyPress={(e) => e.key === "Enter" && handleLogin()}
               className="w-full px-4 py-4 rounded-xl border-2 border-[#4B2C5E] text-[#4B2C5E] text-lg font-medium focus:outline-none focus:ring-4 focus:ring-[#FFD700] mb-4"
             />
             <button
@@ -103,7 +134,9 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
           >
             <ArrowLeft className="w-6 h-6 text-[#4B2C5E]" />
           </button>
-          <h1 className="text-3xl md:text-4xl font-bold text-[#FFFDF5]">Admin Dashboard</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-[#FFFDF5]">
+            Admin Dashboard
+          </h1>
         </div>
 
         {loading ? (
@@ -115,10 +148,13 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="bg-gradient-to-br from-green-400 to-green-600 rounded-2xl p-6 shadow-xl">
                 <div className="flex items-center gap-3 mb-2">
-                  
-                  <h3 className="text-white text-lg font-medium">Total Revenue</h3>
+                  <h3 className="text-white text-lg font-medium">
+                    Total Revenue
+                  </h3>
                 </div>
-                <p className="text-white text-4xl font-bold">₹{Number(totalRevenue).toFixed(2)}</p>
+                <p className="text-white text-4xl font-bold">
+                  ₹{Number(totalRevenue).toFixed(2)}
+                </p>
               </div>
 
               <div className="bg-gradient-to-br from-[#FFD700] to-orange-400 rounded-2xl p-6 shadow-xl">
@@ -127,7 +163,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
                   <h3 className="text-white text-lg font-medium">Top Seller</h3>
                 </div>
                 <p className="text-white text-2xl font-bold">
-                  {topSeller ? topSeller.item_name : 'No sales yet'}
+                  {topSeller ? topSeller.item_name : "No sales yet"}
                 </p>
                 {topSeller && (
                   <p className="text-white text-lg mt-1">
@@ -140,33 +176,46 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
             <div className="bg-[#FFFDF5] rounded-2xl p-6 shadow-xl">
               <div className="flex items-center gap-3 mb-6">
                 <Clock className="w-6 h-6 text-[#4B2C5E]" />
-                <h2 className="text-2xl font-bold text-[#4B2C5E]">Recent Transactions</h2>
+                <h2 className="text-2xl font-bold text-[#4B2C5E]">
+                  Recent Transactions
+                </h2>
               </div>
 
               {recentTransactions.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">No transactions yet</p>
+                <p className="text-gray-500 text-center py-8">
+                  No transactions yet
+                </p>
               ) : (
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {recentTransactions.map((transaction) => (
                     <div
                       key={transaction.sale_id}
-                      className="flex justify-between items-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                      className="flex justify-between items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors gap-3"
                     >
-                      <div className="flex-1">
-                        <h4 className="font-bold text-[#4B2C5E] text-lg">
-                          {transaction.item_name || 'Unknown Item'}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-[#4B2C5E] text-sm md:text-base truncate">
+                          {transaction.item_name || "Unknown Item"}
                         </h4>
-                        <p className="text-gray-500 text-sm">
-                          {transaction.category} • Qty: {transaction.quantity}
-                        </p>
-                        <p className="text-gray-400 text-xs mt-1">
+                        <p className="text-gray-500 text-xs">
                           {formatDate(transaction.sale_time)}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-[#FFD700]">
-                          ₹{Number(transaction.total_amount).toFixed(2)}
-                        </p>
+
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-[#4B2C5E]">
+                            ₹{Number(transaction.total_amount).toFixed(0)}
+                          </p>
+                        </div>
+
+                        {/* New Delete Button */}
+                        <button
+                          onClick={() => handleDeleteSale(transaction.sale_id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete transaction"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
                   ))}

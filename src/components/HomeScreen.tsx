@@ -43,23 +43,23 @@ export function HomeScreen({ onCategorySelect, onAdminClick }: HomeScreenProps) 
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {filteredCategories.map((category) => {
-            const Icon = category.icon;
-            return (
-              <button
-                key={category.name}
-                onClick={() => onCategorySelect(category.name)}
-                className={`bg-gradient-to-br ${category.color} p-8 rounded-2xl shadow-xl hover:scale-105 transition-transform duration-200 active:scale-95`}
-              >
-                <Icon className="w-12 h-12 text-white mx-auto mb-3" />
-                <h3 className="text-white text-xl md:text-2xl font-bold text-center">
-                  {category.name}
-                </h3>
-              </button>
-            );
-          })}
-        </div>
+        <div className="grid grid-cols-2 gap-3 mb-6"> {/* Changed from grid-cols-1 md:grid-cols-2 */}
+  {filteredCategories.map((category) => {
+    const Icon = category.icon;
+    return (
+      <button
+        key={category.name}
+        onClick={() => onCategorySelect(category.name)}
+        className={`bg-gradient-to-br ${category.color} p-4 rounded-xl shadow-lg hover:scale-105 transition-transform active:scale-95`}
+      >
+        <Icon className="w-8 h-8 text-white mx-auto mb-2" /> {/* Smaller icons */}
+        <h3 className="text-white text-sm md:text-lg font-bold text-center">
+          {category.name}
+        </h3>
+      </button>
+    );
+  })}
+</div>  
 
         <button
           onClick={onAdminClick}

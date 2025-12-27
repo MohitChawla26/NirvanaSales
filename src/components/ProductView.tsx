@@ -1,6 +1,6 @@
-import { ArrowLeft, DollarSign } from 'lucide-react';
-import { Product } from '../services/api';
-import { useState } from 'react';
+import { ArrowLeft, DollarSign } from "lucide-react";
+import { Product } from "../services/api";
+import { useState } from "react";
 
 interface ProductViewProps {
   category: string;
@@ -9,10 +9,17 @@ interface ProductViewProps {
   onRecordSale: (product: Product) => Promise<void>;
 }
 
-export function ProductView({ category, products, onBack, onRecordSale }: ProductViewProps) {
+export function ProductView({
+  category,
+  products,
+  onBack,
+  onRecordSale,
+}: ProductViewProps) {
   const [processingId, setProcessingId] = useState<number | null>(null);
 
-  const categoryProducts = products.filter((p) => p.category === category);
+  const categoryProducts = products.filter(
+    (p) => p.category.trim().toLowerCase() === category.trim().toLowerCase()
+  );
 
   const handleSale = async (product: Product) => {
     setProcessingId(product.product_id);
@@ -33,7 +40,9 @@ export function ProductView({ category, products, onBack, onRecordSale }: Produc
           >
             <ArrowLeft className="w-6 h-6 text-[#4B2C5E]" />
           </button>
-          <h1 className="text-3xl md:text-4xl font-bold text-[#FFFDF5]">{category}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-[#FFFDF5]">
+            {category}
+          </h1>
         </div>
 
         {categoryProducts.length === 0 ? (
@@ -43,34 +52,39 @@ export function ProductView({ category, products, onBack, onRecordSale }: Produc
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          // src/components/ProductView.tsx modification
+          <div className="space-y-2">
+            {" "}
+            {/* Reduced spacing between cards */}
             {categoryProducts.map((product) => (
               <div
                 key={product.product_id}
-                className="bg-[#FFFDF5] rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-shadow"
+                className="bg-[#FFFDF5] rounded-xl p-3 shadow-md flex items-center justify-between gap-3"
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl md:text-2xl font-bold text-[#4B2C5E] mb-2">
-                      {product.item_name}
-                    </h3>
-                    <div className="flex items-center gap-2 text-[#FFD700]">
-                      <DollarSign className="w-5 h-5" />
-                      <span className="text-2xl font-bold">{product.price.toFixed(2)}</span>
-                    </div>
+                <div className="flex-1 min-w-0">
+                  {" "}
+                  {/* min-w-0 prevents text overflow */}
+                  <h3 className="text-base font-bold text-[#4B2C5E] truncate">
+                    {product.item_name}
+                  </h3>
+                  <div className="flex items-center text-[#FFD700] text-sm">
+                    <DollarSign className="w-4 h-4" />
+                    <span className="font-bold">
+                      {Number(product.price).toFixed(2)}
+                    </span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => handleSale(product)}
                   disabled={processingId === product.product_id}
-                  className={`w-full py-4 rounded-xl font-bold text-lg transition-all shadow-lg ${
+                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-all whitespace-nowrap ${
                     processingId === product.product_id
-                      ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-[#4B2C5E] to-[#6B4C7E] text-[#FFFDF5] hover:from-[#6B4C7E] hover:to-[#4B2C5E] active:scale-95'
+                      ? "bg-gray-300 text-gray-500"
+                      : "bg-[#4B2C5E] text-[#FFFDF5] active:scale-95"
                   }`}
                 >
-                  {processingId === product.product_id ? 'Processing...' : 'Record Sale'}
+                  {processingId === product.product_id ? "..." : "Sell"}
                 </button>
               </div>
             ))}

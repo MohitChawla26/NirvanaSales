@@ -31,9 +31,9 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
         getTopSeller(),
         getRecentTransactions(),
       ]);
-      setTotalRevenue(revenue);
+      setTotalRevenue(Number(revenue) || 0); // Safety conversion
       setTopSeller(seller);
-      setRecentTransactions(transactions);
+      setRecentTransactions(Array.isArray(transactions) ? transactions : []);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -42,13 +42,17 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (e) {
+      return dateString;
+    }
   };
 
   if (!isAuthenticated) {
@@ -111,10 +115,10 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="bg-gradient-to-br from-green-400 to-green-600 rounded-2xl p-6 shadow-xl">
                 <div className="flex items-center gap-3 mb-2">
-                  <DollarSign className="w-8 h-8 text-white" />
+                  
                   <h3 className="text-white text-lg font-medium">Total Revenue</h3>
                 </div>
-                <p className="text-white text-4xl font-bold">${totalRevenue.toFixed(2)}</p>
+                <p className="text-white text-4xl font-bold">₹{Number(totalRevenue).toFixed(2)}</p>
               </div>
 
               <div className="bg-gradient-to-br from-[#FFD700] to-orange-400 rounded-2xl p-6 shadow-xl">
@@ -161,7 +165,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold text-[#FFD700]">
-                          ${transaction.total_amount.toFixed(2)}
+                          ₹{Number(transaction.total_amount).toFixed(2)}
                         </p>
                       </div>
                     </div>

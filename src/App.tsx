@@ -40,18 +40,18 @@ function App() {
     setCurrentScreen('products');
   };
 
-  const handleRecordSale = async (product: Product) => {
-    setToast({ message: 'Sale Recorded!', type: 'success' });
-
-    try {
-      const success = await recordSale(product.product_id, product.price);
-      if (!success) {
-        setToast({ message: 'Failed to record sale', type: 'error' });
-      }
-    } catch (error) {
-      setToast({ message: 'Error recording sale', type: 'error' });
+ const handleRecordSale = async (product: Product) => {
+  try {
+    const success = await recordSale(product.product_id, product.price);
+    if (success) {
+      setToast({ message: 'Sale Recorded!', type: 'success' });
+    } else {
+      setToast({ message: 'Failed to record sale', type: 'error' });
     }
-  };
+  } catch (error) {
+    setToast({ message: 'Connection Error', type: 'error' });
+  }
+};
 
   const handleBack = () => {
     setCurrentScreen('home');

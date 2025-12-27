@@ -68,9 +68,9 @@ export function ProductView({
                     {product.item_name}
                   </h3>
                   <div className="flex items-center text-[#FFD700] text-sm">
-                    <DollarSign className="w-4 h-4" />
+                  
                     <span className="font-bold">
-                      {Number(product.price).toFixed(2)}
+                      ₹{Number(product.price).toFixed(2)}
                     </span>
                   </div>
                 </div>

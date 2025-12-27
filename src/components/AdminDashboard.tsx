@@ -33,7 +33,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = () => {
-    if (password === "admin123") {
+    if (password === "nirvana123") {
       setIsAuthenticated(true);
       loadDashboardData();
     } else {

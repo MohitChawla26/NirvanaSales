@@ -1,4 +1,4 @@
-const API_ENDPOINT = 'http://services.smartifyindia.co.in:8081/query';
+const API_ENDPOINT = '/api/query';
 
 export interface Product {
   product_id: number;
